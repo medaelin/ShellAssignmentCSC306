@@ -61,36 +61,6 @@ int main(void)
             }
         }
 
-        // Tokenize
-        int i = 0;
-        char *token = strtok(input, " ");
-        while (token != NULL && i < MAX_LINE / 2) {
-            args[i++] = token;
-            token = strtok(NULL, " ");
-        }
-        args[i] = NULL;
-
-        // Check for redirection
-        int redirect = 0;
-        int redirect_type = 0;
-        char *filename = NULL;
-
-        for (int j = 0; args[j] != NULL; j++) {
-            if (strcmp(args[j], ">") == 0) {
-                redirect = 1;
-                redirect_type = 1; // Output
-                filename = args[j + 1];
-                args[j] = NULL;
-                break;
-            } else if (strcmp(args[j], "<") == 0) {
-                redirect = 1;
-                redirect_type = 2; // Input
-                filename = args[j + 1];
-                args[j] = NULL;
-                break;
-            }
-        }
-
         if (has_pipe) {
             int fd[2];
             pipe(fd);
@@ -139,6 +109,36 @@ int main(void)
             wait(NULL);
             wait(NULL);
             continue;
+        }
+
+        // Tokenize
+        int i = 0;
+        char *token = strtok(input, " ");
+        while (token != NULL && i < MAX_LINE / 2) {
+            args[i++] = token;
+            token = strtok(NULL, " ");
+        }
+        args[i] = NULL;
+
+        // Check for redirection
+        int redirect = 0;
+        int redirect_type = 0;
+        char *filename = NULL;
+
+        for (int j = 0; args[j] != NULL; j++) {
+            if (strcmp(args[j], ">") == 0) {
+                redirect = 1;
+                redirect_type = 1; // Output
+                filename = args[j + 1];
+                args[j] = NULL;
+                break;
+            } else if (strcmp(args[j], "<") == 0) {
+                redirect = 1;
+                redirect_type = 2; // Input
+                filename = args[j + 1];
+                args[j] = NULL;
+                break;
+            }
         }
         
 
