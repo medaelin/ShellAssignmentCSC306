@@ -37,7 +37,7 @@ int main(void)
         char *pipe_symbol = strchr(input, '|');
         if(pipe_symbol != NULL) {
             has_pipe =1;
-            *pipe_symbol = '0';
+            *pipe_symbol = '\0';
             pipe_cmd_left = input;
             pipe_cmd_right = pipe_symbol + 1;
 
