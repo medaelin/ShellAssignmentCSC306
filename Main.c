@@ -18,6 +18,7 @@ int main(void)
     int should_run = 1;         /* flag to determine when to exit program */
 
     while (should_run) {
+        // 1 - Prompt the user and read in
         printf("osh> ");
         fflush(stdout);
 
@@ -25,15 +26,13 @@ int main(void)
 
         input[strcspn(input, "\n")] = '\0';
 
+        // 2 - Exit built in
         if (strcmp(input, "exit") == 0) {
             should_run = 0;
             continue;
         }
 
-        int has_pipe = 0;
-        char *pipe_cmd_left = NULL;
-        char *pipe_cmd_right = NULL;
-
+        // 3 - History built in
         if (strcmp(input, "!!") == 0) {
             if (strlen(last_command) == 0) {
                 printf("No commands in history.\n");
@@ -46,6 +45,10 @@ int main(void)
             strcpy(last_command, input);
         }
 
+        // 4 - Pipe detection
+        int has_pipe = 0;
+        char *pipe_cmd_left = NULL;
+        char *pipe_cmd_right = NULL;
         char *pipe_symbol = strchr(input, '|');
         if(pipe_symbol != NULL) {
             has_pipe =1;
@@ -62,10 +65,13 @@ int main(void)
         }
 
         if (has_pipe) {
+            // 5 - Handle one pipe with 2 children
             int fd[2];
             pipe(fd);
         
             pid_t pid1 = fork();
+
+            // Child 1 - left command and writes to pipe
             if (pid1 == 0) {
                 // First child: write to pipe
                 dup2(fd[1], STDOUT_FILENO);
@@ -85,8 +91,9 @@ int main(void)
             }
         
             pid_t pid2 = fork();
+
+            // Second child: reads from pipe
             if (pid2 == 0) {
-                // Second child: read from pipe
                 dup2(fd[0], STDIN_FILENO);
                 close(fd[1]); // Close write end
                 close(fd[0]); // Close read end in child too!
@@ -111,7 +118,7 @@ int main(void)
             continue;
         }
 
-        // Tokenize
+        // 6/1 - Tokenize - No pipe
         int i = 0;
         char *token = strtok(input, " ");
         while (token != NULL && i < MAX_LINE / 2) {
@@ -120,7 +127,7 @@ int main(void)
         }
         args[i] = NULL;
 
-        // Check for redirection
+        // 6/2 - Check for redirection
         int redirect = 0;
         int redirect_type = 0;
         char *filename = NULL;
@@ -142,7 +149,7 @@ int main(void)
         }
         
 
-        // Now fork
+        // 6/3 - Fork and execute
         pid_t pid = fork();
 
         if (pid < 0) {
