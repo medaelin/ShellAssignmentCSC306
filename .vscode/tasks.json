@@ -6,7 +6,7 @@
         "type": "shell",
         "command": "gcc",
         "args": [
-          "shell.c",
+          "Main.c",
           "-o",
           "shell",
           "&&",
