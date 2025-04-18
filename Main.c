@@ -30,6 +30,18 @@ int main(void)
             continue;
         }
 
+        if (strcmp(input, "!!") == 0) {
+            if (strlen(last_command) == 0) {
+                printf("No commands in history.\n");
+                continue;
+            } else {
+                printf("%s\n", last_command);
+                strcpy(input, last_command);
+            }
+        } else {
+            strcpy(last_command, input);
+        }
+
         int has_pipe = 0;
         char *pipe_cmd_left = NULL;
         char *pipe_cmd_right = NULL;
@@ -47,18 +59,6 @@ int main(void)
             while (*(pipe_cmd_left + strlen(pipe_cmd_left) - 1) == ' ') {
                 *(pipe_cmd_left + strlen(pipe_cmd_left) - 1) = '\0';
             }
-        }
-
-        if (strcmp(input, "!!") == 0) {
-            if (strlen(last_command) == 0) {
-                printf("No commands in history.\n");
-                continue;
-            } else {
-                printf("%s\n", last_command);
-                strcpy(input, last_command);
-            }
-        } else {
-            strcpy(last_command, input);
         }
 
         // Tokenize
