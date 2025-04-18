@@ -70,9 +70,6 @@ int main(void)
         }
         args[i] = NULL;
 
-       // Fork a child using fork()
-        pid_t pid = fork();
-
         if (pid < 0) {
            perror("Fork did not work");
         }
@@ -103,6 +100,7 @@ int main(void)
            perror("Failed execution");
            exit(1);
         }
+    }
         else {
            // parent will invoke wait() unless command included 
            wait(NULL);
@@ -126,6 +124,9 @@ int main(void)
                 break;
             }
         }
+
+         // Fork a child using fork()
+         pid_t pid = fork();
 
     }
 
