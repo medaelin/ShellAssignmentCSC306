@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sched.h>
+#include <sys/wait.h>
 
 #define MAX_LINE 80 /* The maximum length command */
 
