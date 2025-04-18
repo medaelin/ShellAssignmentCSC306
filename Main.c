@@ -22,33 +22,6 @@ int main(void)
          * (3) parent will invoke wait() unless command included &
          */
 
-        // Tokenize the input 
-         int i = 0;
-         char *token = strtok(input, " ");
-
-         while (token != NULL && i < MAX_LINE / 2) {
-            args[i++] = token;
-            token = strtok(NULL, " ");
-         }
-         args[i] = NULL;
-
-        // Fork a child using fork()
-         pid_t pid = fork();
-
-         if (pid < 0) {
-            perror("Fork did not work");
-         }
-         else if (pid == 0) {
-            // child process will invoke execvp()
-            execvp(args[0], args);
-            perror("Failed execution");
-            exit(1);
-         }
-         else {
-            // parent will invoke wait() unless command included &
-            wait(NULL);
-         }
-
         // Read the input from the user 
         if (fgets(input, MAX_LINE, stdin) == NULL) {
             continue;
@@ -61,6 +34,33 @@ int main(void)
         if (strcmp(input, "exit") == 0) {
             should_run = 0;
             continue;
+        }
+
+        // Tokenize the input 
+        int i = 0;
+        char *token = strtok(input, " ");
+
+        while (token != NULL && i < MAX_LINE / 2) {
+           args[i++] = token;
+           token = strtok(NULL, " ");
+        }
+        args[i] = NULL;
+
+       // Fork a child using fork()
+        pid_t pid = fork();
+
+        if (pid < 0) {
+           perror("Fork did not work");
+        }
+        else if (pid == 0) {
+           // child process will invoke execvp()
+           execvp(args[0], args);
+           perror("Failed execution");
+           exit(1);
+        }
+        else {
+           // parent will invoke wait() unless command included &
+           wait(NULL);
         }
 
     }
