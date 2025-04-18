@@ -30,6 +30,10 @@ int main(void)
             continue;
         }
 
+        int has_pipe = 0;
+        char *pipe_cmd_left = NULL;
+        char *pipe_cmd_right = NULL;
+
         if (strcmp(input, "!!") == 0) {
             if (strlen(last_command) == 0) {
                 printf("No commands in history.\n");
@@ -41,10 +45,6 @@ int main(void)
         } else {
             strcpy(last_command, input);
         }
-
-        int has_pipe = 0;
-        char *pipe_cmd_left = NULL;
-        char *pipe_cmd_right = NULL;
 
         char *pipe_symbol = strchr(input, '|');
         if(pipe_symbol != NULL) {
