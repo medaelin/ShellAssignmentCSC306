@@ -38,6 +38,15 @@ int main(void)
         if(pipe_symbol != NULL) {
             has_pipe =1;
             *pipe_symbol = '0';
+            pipe_cmd_left = input;
+            pipe_cmd_right = pipe_symbol + 1;
+
+            while (*pipe_cmd_right == ' ') {
+                pipe_cmd_right++;
+            }
+            while (*(pipe_cmd_left + strlen(pipe_cmd_left) - 1) == ' ') {
+                *(pipe_cmd_left + strlen(pipe_cmd_left) - 1) = '\0';
+            }
         }
 
         if (strcmp(input, "!!") == 0) {
@@ -80,6 +89,59 @@ int main(void)
                 args[j] = NULL;
                 break;
             }
+        }
+
+        if (has_pipe) {
+            int fd[2];
+            pipe(fd);
+
+            pid_t pid1 = fork();
+
+            if(pid1 == 0){
+                dup2(fd[1], STDOUT_FILENO);
+                close(fd[0]);
+
+                char *left_args[MAX_LINE/2 + 1];
+                int i = 0;
+                char *token = strtok(pipe_cmd_left, " ");
+
+                while (token != NULL) {
+                    left_args[i++] = token;
+                    token = strtok(NULL, " ");
+                }
+                left_args[i] = NULL;
+
+                execvp(left_args[0], left_args);
+                perror("Execution failed");
+                exit(1);
+            }
+
+            pid_t pid2 = fork();
+            if(pid2 == 0){
+                dup2(fd[0], STDIN_FILENO);
+                close(fd[1]);
+                close(fd[0]);
+
+                char *right_args[MAX_LINE/2 + 1];
+                int i = 0;
+                char *token = strtok(pipe_cmd_right, " ");
+
+                while (token != NULL) {
+                    right_args[i++] = token;
+                    token = strtok(NULL, " ");
+                }
+                right_args[i] = NULL;
+
+                execvp(right_args[0], right_args);
+                perror("Execution failed");
+                exit(1);
+            }
+
+            close(fd[0]);
+            close(fd[1]);
+            wait(NULL);
+            wait(NULL);
+            continue;
         }
 
         // Now fork
